@@ -49,85 +49,80 @@ export async function initDrizzle(options: InitOptions): Promise<void> {
       }
     }
 
-    // Get database configuration
-    let databaseConfig: Record<string, string> = {};
-
-    // if (!options.yes) {
-    //   console.log(
-    //     chalk.cyan("\n📝 Please provide your database connection details:")
-    //   );
-    //   console.log(
-    //     chalk.gray(
-    //       "  (You can set these up later by editing .env if you prefer)"
-    //     )
-    //   );
-
-    //   databaseConfig = await inquirer.prompt([
-    //     {
-    //       type: "input",
-    //       name: "dbUrl",
-    //       message:
-    //         "PostgreSQL Connection URL (or leave empty to set up later):",
-    //       default: "",
-    //     },
-    //   ]);
-    // }
-
-    // Installation steps
-    const spinner = ora("Setting up Drizzle ORM with PostgreSQL...").start();
+    // Installation steps - better progress indicators
+    console.log(chalk.cyan("\n📦 Setting up Drizzle with PostgreSQL\n"));
 
     // 1. Install required dependencies
-    spinner.text = "Installing dependencies...";
-    await installDependencies(projectDir);
+    const installSpinner = ora("Installing dependencies...").start();
+    try {
+      await installDependencies(projectDir);
+      installSpinner.succeed(
+        chalk.green("Dependencies installed successfully")
+      );
+    } catch (error) {
+      installSpinner.fail(chalk.red("Failed to install dependencies"));
+      throw error;
+    }
 
     // 2. Create necessary files
-    spinner.text = "Creating configuration files...";
-    await createConfigFiles(projectDir, databaseConfig);
+    const configSpinner = ora("Creating configuration files...").start();
+    try {
+      await createConfigFiles(projectDir);
+      configSpinner.succeed(chalk.green("Configuration files created"));
+    } catch (error) {
+      configSpinner.fail(chalk.red("Failed to create configuration files"));
+      throw error;
+    }
 
     // 3. Add scripts to package.json
-    spinner.text = "Updating package.json scripts...";
-    await updatePackageJson(projectDir);
+    const pkgSpinner = ora("Updating package.json scripts...").start();
+    try {
+      await updatePackageJson(projectDir);
+      pkgSpinner.succeed(chalk.green("package.json updated with new scripts"));
+    } catch (error) {
+      pkgSpinner.fail(chalk.red("Failed to update package.json"));
+      throw error;
+    }
 
-    spinner.succeed(
+    console.log(
       chalk.green(
-        "✅ Drizzle ORM with PostgreSQL has been successfully set up!"
+        "\n✅ Drizzle ORM with PostgreSQL has been successfully set up!"
       )
     );
 
-    console.log(chalk.cyan("\n📝 Important note about seeding data:"));
-    console.log(`
-To seed your database with mock data, follow these steps:
+    // More visually organized next steps section
+    console.log(chalk.bold.cyan("\n📝 NEXT STEPS"));
+    console.log(chalk.dim("─".repeat(50)));
 
-1. First set up your database URL in ${chalk.bold(".env")} 
-2. Run ${chalk.bold("pnpm db:generate")} to create migration files
-3. Run ${chalk.bold("pnpm db:push")} to create tables in your database
-4. Run ${chalk.bold("pnpm db:seed")} to populate with sample data
-5. Visit ${chalk.bold("/examples")} to see your data
+    console.log(`
+${chalk.cyan("1.")} Create a .env file based on the template
+   ${chalk.dim("$")} ${chalk.bold("cp .env.example .env")}
+      
+${chalk.cyan("2.")} Add your database connection string to the .env file
+   ${chalk.dim("DATABASE_URL=")}${chalk.italic.dim(
+      "postgresql://username:password@host:port/db_name"
+    )}
+      
+${chalk.cyan(
+  "3."
+)} Run database migrations to create your tables and seed (see package.json for more details)
+
+${chalk.cyan("4.")} View the example page at ${chalk.underline("/examples")}
+
+${chalk.cyan("5.")} Use Drizzle in your app by importing:
+   ${chalk.bold('import { db } from "@/server/db";')}
+      
+${chalk.cyan("6.")} Use typesafe environment variables by importing:
+   ${chalk.bold('import { env } from "@/env";')}
 `);
 
-    // Display next steps
-    console.log(chalk.cyan("\n📋 Next steps:"));
-    console.log(`
-      1. Create a .env file based on the provided .env.example template
-         cp .env.example .env
-      
-      2. Add your actual database connection string to the .env file
-      
-      3. Run database migrations to create your tables:
-         pnpm db:generate
-         pnpm db:push
-      
-      4. Seed your database with mock data:
-         pnpm db:seed
-      
-      5. View the example page at /examples to see your data
-      
-      6. Use Drizzle in your app by importing:
-         import { db } from "@/server/db";
-      
-      7. Use typesafe environment variables by importing:
-         import { env } from "@/env";
-      `);
+    console.log(chalk.dim("─".repeat(50)));
+    console.log(
+      chalk.cyan("\n💡 TIP:") +
+        " Run " +
+        chalk.bold("pnpm db:studio") +
+        " to open Drizzle Studio and manage your database visually"
+    );
   } catch (error) {
     console.error(
       chalk.red(
@@ -168,13 +163,10 @@ async function installDependencies(projectDir: string): Promise<void> {
   }
 }
 
-async function createConfigFiles(
-  projectDir: string,
-  config: Record<string, string>
-): Promise<void> {
+async function createConfigFiles(projectDir: string): Promise<void> {
   try {
     // Compile and write templates
-    await compileTemplates(projectDir, config);
+    await compileTemplates(projectDir);
 
     // Create .env.example file
     const envExamplePath = path.join(projectDir, ".env.example");

@@ -6,13 +6,15 @@ import { initDrizzle } from "./commands/init";
 
 const program = new Command();
 
+// More visually appealing and informative banner
 console.log(
   chalk.cyan(`
-╔═══════════════════════════════════════════════╗
-║                                               ║
-║        ${chalk.bold("Ginji Next.js Drizzle Setup")}            ║
-║                                               ║
-╚═══════════════════════════════════════════════╝
+╭───────────────────────────────────────────────╮
+│                                               │
+│        ${chalk.bold.white("Ginji Next.js Drizzle Setup")}            │
+│        ${chalk.dim("v1.0.0")}                                 │
+│                                               │
+╰───────────────────────────────────────────────╯
 `)
 );
 
@@ -31,6 +33,17 @@ program
   .option("-y, --yes", "Skip confirmation prompts")
   .option("-d, --dir <directory>", "Specify the Next.js project directory")
   .action(initDrizzle);
+
+// Add examples section to help output
+program.addHelpText(
+  "after",
+  `
+${chalk.bold("Examples:")}
+  $ ginji-next-drizzle init                 # Initialize in current directory
+  $ ginji-next-drizzle init -y              # Initialize with default options
+  $ ginji-next-drizzle init -d ./my-nextjs  # Initialize in specified directory
+`
+);
 
 program.parse(process.argv);
 
