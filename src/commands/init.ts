@@ -52,26 +52,26 @@ export async function initDrizzle(options: InitOptions): Promise<void> {
     // Get database configuration
     let databaseConfig: Record<string, string> = {};
 
-    if (!options.yes) {
-      console.log(
-        chalk.cyan("\n📝 Please provide your database connection details:")
-      );
-      console.log(
-        chalk.gray(
-          "  (You can set these up later by editing .env if you prefer)"
-        )
-      );
+    // if (!options.yes) {
+    //   console.log(
+    //     chalk.cyan("\n📝 Please provide your database connection details:")
+    //   );
+    //   console.log(
+    //     chalk.gray(
+    //       "  (You can set these up later by editing .env if you prefer)"
+    //     )
+    //   );
 
-      databaseConfig = await inquirer.prompt([
-        {
-          type: "input",
-          name: "dbUrl",
-          message:
-            "PostgreSQL Connection URL (or leave empty to set up later):",
-          default: "",
-        },
-      ]);
-    }
+    //   databaseConfig = await inquirer.prompt([
+    //     {
+    //       type: "input",
+    //       name: "dbUrl",
+    //       message:
+    //         "PostgreSQL Connection URL (or leave empty to set up later):",
+    //       default: "",
+    //     },
+    //   ]);
+    // }
 
     // Installation steps
     const spinner = ora("Setting up Drizzle ORM with PostgreSQL...").start();
@@ -108,36 +108,26 @@ To seed your database with mock data, follow these steps:
     // Display next steps
     console.log(chalk.cyan("\n📋 Next steps:"));
     console.log(`
-1. ${chalk.yellow("Add your database URL")} in ${chalk.bold(
-      ".env"
-    )} if you haven't already:
-  ${chalk.gray(
-    'DATABASE_URL="postgresql://username:password@host:port/db_name"'
-  )}
-
-2. ${chalk.yellow("Create or modify your schema")} in ${chalk.bold(
-      "src/server/db/schema/"
-    )} directory
-
-3. ${chalk.yellow("Run database migrations to create your tables")}:
-  ${chalk.gray("pnpm db:generate")} - Generate SQL migration files
-  ${chalk.gray("pnpm db:push")} - Apply migrations to your database
-
-4. ${chalk.yellow("Seed your database with mock data")}:
-  ${chalk.gray(
-    "pnpm db:seed"
-  )} - This will populate your database with sample users and posts
-
-5. ${chalk.yellow("View the example page")} at ${chalk.bold(
-      "/examples"
-    )} to see your data
-
-6. ${chalk.yellow("Use Drizzle in your app")} by importing:
-  ${chalk.gray('import { db } from "@/src/server/db";')}
-
-7. ${chalk.yellow("Use typesafe environment variables")} by importing:
-  ${chalk.gray('import { env } from "@/src/env";')}
-`);
+      1. Create a .env file based on the provided .env.example template
+         cp .env.example .env
+      
+      2. Add your actual database connection string to the .env file
+      
+      3. Run database migrations to create your tables:
+         pnpm db:generate
+         pnpm db:push
+      
+      4. Seed your database with mock data:
+         pnpm db:seed
+      
+      5. View the example page at /examples to see your data
+      
+      6. Use Drizzle in your app by importing:
+         import { db } from "@/server/db";
+      
+      7. Use typesafe environment variables by importing:
+         import { env } from "@/env";
+      `);
   } catch (error) {
     console.error(
       chalk.red(

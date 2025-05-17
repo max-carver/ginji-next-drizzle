@@ -179,8 +179,8 @@ async function writeServerActions(projectDir: string): Promise<void> {
   // Create users action
   const usersActionContent = `"use server";
 
-import { db } from "@/src/server/db";
-import { users } from "@/src/server/db/schema";
+import { db } from "@/server/db";
+import { users } from "@/server/db/schema";
 import { desc } from "drizzle-orm";
 
 export async function getUsers() {
@@ -203,8 +203,8 @@ export async function getUsers() {
   // Create posts action with SQL-like join syntax
   const postsActionContent = `"use server";
 
-import { db } from "@/src/server/db";
-import { posts, users } from "@/src/server/db/schema";
+import { db } from "@/server/db";
+import { posts, users } from "@/server/db/schema";
 import { desc, eq } from "drizzle-orm";
 
 export async function getPosts() {
@@ -238,8 +238,8 @@ async function writeExamplePage(projectDir: string): Promise<void> {
   await fs.ensureDir(path.join(projectDir, "src", "app", "examples"));
 
   // Create example page
-  const examplePageContent = `import { getUsers } from "@/src/server/actions/users";
-import { getPosts } from "@/src/server/actions/posts";
+  const examplePageContent = `import { getUsers } from "@/server/actions/users";
+import { getPosts } from "@/server/actions/posts";
 
 export default async function ExamplesPage() {
   // Fetch data using server actions
